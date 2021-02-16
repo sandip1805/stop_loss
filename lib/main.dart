@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stop_loss/components/custom_outlined_button.dart';
 import 'package:stop_loss/components/display_label.dart';
+import 'package:stop_loss/components/result_box.dart';
 import 'package:stop_loss/components/text_field.dart';
 import 'package:stop_loss/config/size_config.dart';
 import 'package:toggle_switch/toggle_switch.dart';
@@ -38,83 +39,76 @@ class _MyHomePageState extends State<MyHomePage> {
   bool isStopLossPercentage = true;
   bool isTargetPercentage = true;
   double entryPrice = 0;
-  double investmentAmountOrQuantity = 10;
-  double stopLoss = 0;
-  double target = 0;
+  double investedAmount = 0;
+  double stopLossPrice = 0;
+  double stopLossPercentage = 0;
+  double targetPrice = 0;
+  double targetPercentage = 0;
+  double quantity = 0;
 
-  double entry = 0,
-      profit = 0,
-      loss = 0,
-      quantity = 0,
-      investedAmount = 0,
-      profitPercentage = 0,
-      lossPercentage = 0,
-      exit = 0;
+  double totalProfit = 0, totalLoss = 0;
 
   final _formKey = GlobalKey<FormState>();
 
   reset() {
     setState(() {
+      _formKey.currentState.reset();
       isQuantity = true;
       isStopLossPercentage = true;
       isTargetPercentage = true;
       entryPrice = 0;
-      investmentAmountOrQuantity = 10;
-      stopLoss = 0;
-      target = 0;
-
-      _formKey.currentState.reset();
-
-      entry = 0;
-      profit = 0;
-      loss = 0;
-      quantity = 0;
       investedAmount = 0;
-      exit = 0;
-      profitPercentage = 0;
-      lossPercentage = 0;
+      stopLossPrice = 0;
+      stopLossPercentage = 0;
+      targetPrice = 0;
+      targetPercentage = 0;
+      quantity = 0;
+      totalProfit = 0;
+      totalLoss = 0;
     });
   }
 
   void calculate() {
-    if(_formKey.currentState.validate()) {
+    if (_formKey.currentState.validate()) {
       setState(() {
-        entry = entryPrice;
-        exit = isTargetPercentage
-            ? (entryPrice + ((target / 100) * entryPrice))
-            : target;
-        print('exit $exit');
-        investedAmount = isQuantity
-            ? (investmentAmountOrQuantity * entryPrice)
-            : investmentAmountOrQuantity;
+        targetPrice = isTargetPercentage
+            ? (entryPrice + ((targetPercentage / 100) * entryPrice))
+            : targetPrice;
+        print('targetPrice $targetPrice');
+
+        targetPercentage = isTargetPercentage
+            ? targetPercentage
+            : calculatePercentage(targetPrice, entryPrice);
+        print('targetPercentage $targetPercentage');
+
+        stopLossPrice = isStopLossPercentage
+            ? (entryPrice - ((stopLossPercentage / 100) * entryPrice))
+            : stopLossPrice;
+        print('stopLossPrice $stopLossPrice');
+
+        investedAmount = isQuantity ? (quantity * entryPrice) : investedAmount;
         print('investedAmount $investedAmount');
-        quantity = !isQuantity
-            ? (investmentAmountOrQuantity / entryPrice)
-            : investmentAmountOrQuantity;
+
+        quantity = isQuantity ? quantity : (investedAmount / entryPrice);
         print('quantity $quantity');
-        profit = (exit - entryPrice) * quantity;
-        loss = (entryPrice -
-            (isStopLossPercentage
-                ? (entryPrice * (1 - (stopLoss / 100)))
-                : stopLoss)) *
-            quantity;
-        print('loss $loss');
-        profitPercentage =
-        isTargetPercentage ? target : ((exit - entry) / entry) * 100;
-        print('profitPercentage $profitPercentage');
-        lossPercentage = isStopLossPercentage
-            ? stopLoss
-            : (entryPrice * (1 - (stopLoss / 100)));
-        print('lossPercentage $lossPercentage');
+
+        totalProfit = (targetPrice - entryPrice) * quantity;
+        print('totalProfit $totalProfit');
+
+        totalLoss = (entryPrice - stopLossPrice) * quantity;
+        print('totalLoss $totalLoss');
+
+        stopLossPercentage = isStopLossPercentage
+            ? stopLossPercentage
+            : calculatePercentage(entryPrice, stopLossPrice);
+        print('stopLossPercentage $stopLossPercentage');
       });
     }
   }
 
   calculatePercentage(double a, double b) {
-    return ((a-b)/b) * 100;
+    return ((a - b) / b) * 100;
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -168,10 +162,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         onChanged: (value) {
                           setState(
                             () {
-                              investmentAmountOrQuantity = double.parse(value);
+                              var parsedValue = double.parse(value);
                               if (isQuantity) {
-                                investmentAmountOrQuantity =
-                                    investmentAmountOrQuantity.ceilToDouble();
+                                quantity = parsedValue.ceilToDouble();
+                              } else {
+                                investedAmount = parsedValue.ceilToDouble();
                               }
                             },
                           );
@@ -216,11 +211,18 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: CustomTextField(
                         onChanged: (value) {
                           setState(() {
-                            stopLoss = double.parse(value);
+                            if (isStopLossPercentage) {
+                              stopLossPercentage = double.parse(value);
+                            } else {
+                              stopLossPrice = double.parse(value);
+                            }
                           });
                         },
-                        hintText: isStopLossPercentage ? 'Enter StopLoss Percentage' : 'Enter StopLoss Price',
-                        labelText: isStopLossPercentage ? 'StopLoss %' : 'StopLoss',
+                        hintText: isStopLossPercentage
+                            ? 'Enter StopLoss Percentage'
+                            : 'Enter StopLoss Price',
+                        labelText:
+                            isStopLossPercentage ? 'StopLoss %' : 'StopLoss',
                         validator: (value) {
                           if (value.isEmpty) {
                             return 'Please enter StopLoss';
@@ -256,10 +258,17 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: CustomTextField(
                         onChanged: (value) {
                           setState(() {
-                            target = double.parse(value);
+                            var parsedValue = double.parse(value);
+                            if (isTargetPercentage) {
+                              targetPercentage = parsedValue;
+                            } else {
+                              targetPrice = parsedValue;
+                            }
                           });
                         },
-                        hintText: isTargetPercentage ? 'Enter Target Percentage' : 'Enter Target Price',
+                        hintText: isTargetPercentage
+                            ? 'Enter Target Percentage'
+                            : 'Enter Target Price',
                         labelText: isTargetPercentage ? 'Target %' : 'Target',
                         validator: (value) {
                           if (value.isEmpty) {
@@ -306,95 +315,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Colors.black54,
                   thickness: 0.5,
                 ),
-                Column(
-                  children: [
-                    DisplayLabel(
-                      keyText: 'Entry',
-                      valueText: entry.toStringAsFixed(2),
-                    ),
-                    DisplayLabel(
-                      keyText: 'Exit',
-                      valueText: exit.toStringAsFixed(2),
-                    ),
-                    DisplayLabel(
-                      keyText: 'Invested Amount',
-                      valueText: investedAmount.toStringAsFixed(2),
-                    ),
-                    DisplayLabel(
-                      keyText: 'Quantity',
-                      valueText: quantity.toStringAsFixed(0),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: SizeConfig.safeBlockVertical * 1.5,
-                ),
-                Divider(
-                  color: Colors.black54,
-                  thickness: 0.5,
-                ),
-                Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Total Profit',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.green,
-                          ),
-                        ),
-                        Text(
-                          profit.toStringAsFixed(2) +
-                              ' / ' +
-                              profitPercentage.toStringAsFixed(1) +
-                              '%',
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.green,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            text: 'Total Loss',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black54,
-                            ),
-                            children: [
-                              TextSpan(
-                                text: ' (If trade goes wrong)',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.red,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Text(
-                          loss.toStringAsFixed(2) +
-                              ' / ' +
-                              lossPercentage.toStringAsFixed(1) +
-                              '%',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                ResultBox(
+                  entryPrice: entryPrice,
+                  investedAmount: investedAmount,
+                  quantity: quantity,
+                  stopLossPercentage: stopLossPercentage,
+                  targetPercentage: targetPercentage,
+                  targetPrice: targetPrice,
+                  totalLoss: totalLoss,
+                  totalProfit: totalProfit,
                 ),
               ],
             ),
