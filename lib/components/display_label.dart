@@ -1,8 +1,6 @@
-
 import 'package:flutter/material.dart';
 
 class DisplayLabel extends StatelessWidget {
-
   final String keyText;
   final String valueText;
 
@@ -16,7 +14,7 @@ class DisplayLabel extends StatelessWidget {
         Text(
           keyText,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 14,
             fontWeight: FontWeight.w500,
             color: Colors.black54,
           ),
@@ -24,7 +22,7 @@ class DisplayLabel extends StatelessWidget {
         Text(
           valueText,
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
         ),

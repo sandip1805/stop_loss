@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:stop_loss/components/custom_outlined_button.dart';
+import 'package:stop_loss/components/custom_toggle_button.dart';
 import 'package:stop_loss/components/result_box.dart';
 import 'package:stop_loss/components/text_field.dart';
 import 'package:stop_loss/config/size_config.dart';
@@ -47,6 +48,20 @@ class _MyHomePageState extends State<MyHomePage> {
   double quantity = 0;
   double totalProfit = 0, totalLoss = 0;
   final _formKey = GlobalKey<FormState>();
+  var qtyAmtData = [
+    {'widget': Text('Qty'), 'isSelected': true},
+    {'widget': Text('Amt'), 'isSelected': false}
+  ];
+
+  var stopLossPercentageAmountData = [
+    {'widget': Text('%'), 'isSelected': true},
+    {'widget': Text('\$'), 'isSelected': false}
+  ];
+
+  var targetPercentageAmountData = [
+    {'widget': Text('%'), 'isSelected': true},
+    {'widget': Text('\$'), 'isSelected': false}
+  ];
 
   reset() {
     setState(() {
@@ -144,6 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Form(
                     key: _formKey,
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         SizedBox(
                           height: SizeConfig.safeBlockVertical * 1,
@@ -168,9 +184,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Container(
-                              width: SizeConfig.safeBlockHorizontal * 60,
+                            Expanded(
+                              flex: 2,
                               child: CustomTextField(
                                 onChanged: (value) {
                                   setState(
@@ -198,19 +215,23 @@ class _MyHomePageState extends State<MyHomePage> {
                                 },
                               ),
                             ),
-                            SizedBox(
-                              width: SizeConfig.safeBlockHorizontal * 4,
-                            ),
-                            ToggleSwitch(
-                              initialLabelIndex: isQuantity ? 0 : 1,
-                              labels: ['Qty', 'Amt'],
-                              fontSize: 10,
-                              minWidth: 48,
-                              onToggle: (index) {
-                                setState(() {
-                                  isQuantity = !isQuantity;
-                                });
-                              },
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: CustomToggleButton(
+                                data: qtyAmtData,
+                                onPressed: (index) {
+                                  setState(() {
+                                    qtyAmtData.asMap().forEach((i, x) {
+                                      if (i == index) {
+                                        x['isSelected'] = true;
+                                      } else {
+                                        x['isSelected'] = false;
+                                      }
+                                    });
+                                    isQuantity = index == 0 ? true : false;
+                                  });
+                                },
+                              ),
                             ),
                           ],
                         ),
@@ -220,8 +241,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Container(
-                              width: SizeConfig.safeBlockHorizontal * 60,
+                            Expanded(
+                              flex: 2,
                               child: CustomTextField(
                                 onChanged: (value) {
                                   setState(() {
@@ -247,18 +268,27 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                             ),
                             SizedBox(
-                              width: SizeConfig.safeBlockHorizontal * 4,
+                              width: 8,
                             ),
-                            ToggleSwitch(
-                              initialLabelIndex: isStopLossPercentage ? 0 : 1,
-                              labels: ['%', '\$'],
-                              fontSize: 10,
-                              minWidth: 48,
-                              onToggle: (index) {
-                                setState(() {
-                                  isStopLossPercentage = !isStopLossPercentage;
-                                });
-                              },
+                            Expanded(
+                              child: CustomToggleButton(
+                                data: stopLossPercentageAmountData,
+                                onPressed: (index) {
+                                  setState(() {
+                                    stopLossPercentageAmountData
+                                        .asMap()
+                                        .forEach((i, x) {
+                                      if (i == index) {
+                                        x['isSelected'] = true;
+                                      } else {
+                                        x['isSelected'] = false;
+                                      }
+                                    });
+                                    isStopLossPercentage =
+                                        index == 0 ? true : false;
+                                  });
+                                },
+                              ),
                             ),
                           ],
                         ),
@@ -268,8 +298,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Container(
-                              width: SizeConfig.safeBlockHorizontal * 60,
+                            Expanded(
+                              flex: 2,
                               child: CustomTextField(
                                 onChanged: (value) {
                                   setState(() {
@@ -297,16 +327,25 @@ class _MyHomePageState extends State<MyHomePage> {
                             SizedBox(
                               width: SizeConfig.safeBlockHorizontal * 4,
                             ),
-                            ToggleSwitch(
-                              initialLabelIndex: isTargetPercentage ? 0 : 1,
-                              labels: ['%', '\$'],
-                              fontSize: 10,
-                              minWidth: 48,
-                              onToggle: (index) {
-                                setState(() {
-                                  isTargetPercentage = !isTargetPercentage;
-                                });
-                              },
+                            Expanded(
+                              child: CustomToggleButton(
+                                data: targetPercentageAmountData,
+                                onPressed: (index) {
+                                  setState(() {
+                                    targetPercentageAmountData
+                                        .asMap()
+                                        .forEach((i, x) {
+                                      if (i == index) {
+                                        x['isSelected'] = true;
+                                      } else {
+                                        x['isSelected'] = false;
+                                      }
+                                    });
+                                    isStopLossPercentage =
+                                        index == 0 ? true : false;
+                                  });
+                                },
+                              ),
                             ),
                           ],
                         ),
@@ -345,6 +384,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   )
                 : Container(),
+            SizedBox(
+              height: 10,
+            ),
           ],
         ),
       ),

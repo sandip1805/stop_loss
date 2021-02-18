@@ -5,15 +5,9 @@ class CustomTextField extends StatelessWidget {
   final Function validator;
   final String hintText;
   final String labelText;
-  final String initialValue;
 
   const CustomTextField(
-      {Key key,
-      this.onChanged,
-      this.hintText,
-      this.initialValue = '',
-      this.validator,
-      this.labelText})
+      {Key key, this.onChanged, this.hintText, this.validator, this.labelText})
       : super(key: key);
 
   @override
@@ -22,14 +16,13 @@ class CustomTextField extends StatelessWidget {
       onChanged: onChanged,
       validator: validator,
       keyboardType: TextInputType.number,
-      initialValue: initialValue,
       decoration: InputDecoration(
-        contentPadding: const EdgeInsets.all(8.0),
+        isDense: true,
         hintText: hintText,
         labelText: labelText,
         hintStyle: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
