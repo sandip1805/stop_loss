@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:stop_loss/components/custom_outlined_button.dart';
-import 'package:stop_loss/components/display_label.dart';
 import 'package:stop_loss/components/result_box.dart';
 import 'package:stop_loss/components/text_field.dart';
 import 'package:stop_loss/config/size_config.dart';
@@ -35,6 +34,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool shouldShowResult = false;
   bool isQuantity = true;
   bool isStopLossPercentage = true;
   bool isTargetPercentage = true;
@@ -45,13 +45,12 @@ class _MyHomePageState extends State<MyHomePage> {
   double targetPrice = 0;
   double targetPercentage = 0;
   double quantity = 0;
-
   double totalProfit = 0, totalLoss = 0;
-
   final _formKey = GlobalKey<FormState>();
 
   reset() {
     setState(() {
+      shouldShowResult = false;
       _formKey.currentState.reset();
       isQuantity = true;
       isStopLossPercentage = true;
@@ -71,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void calculate() {
     if (_formKey.currentState.validate()) {
       setState(() {
+        shouldShowResult = true;
         targetPrice = isTargetPercentage
             ? (entryPrice + ((targetPercentage / 100) * entryPrice))
             : targetPrice;
@@ -129,205 +129,223 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(15.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                CustomTextField(
-                  onChanged: (value) {
-                    setState(() {
-                      entryPrice = double.parse(value);
-                    });
-                  },
-                  hintText: 'Stock Entry Price',
-                  labelText: 'Entry Price',
-                  validator: (value) {
-                    if (value.isEmpty) {
-                      return 'Please enter entry price';
-                    }
-                    return null;
-                  },
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                    12.0,
+                  ),
                 ),
-                SizedBox(
-                  height: SizeConfig.safeBlockVertical * 1.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: SizeConfig.safeBlockHorizontal * 60,
-                      child: CustomTextField(
-                        onChanged: (value) {
-                          setState(
-                            () {
-                              var parsedValue = double.parse(value);
-                              if (isQuantity) {
-                                quantity = parsedValue.ceilToDouble();
-                              } else {
-                                investedAmount = parsedValue.ceilToDouble();
-                              }
-                            },
-                          );
-                        },
-                        hintText: isQuantity
-                            ? 'Enter Stock Quantity'
-                            : 'Enter Your Investment Amount',
-                        labelText: isQuantity ? 'Quantity' : 'Amount',
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter ' +
-                                (isQuantity ? 'Quantity' : 'Amount');
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      width: SizeConfig.safeBlockHorizontal * 4,
-                    ),
-                    ToggleSwitch(
-                      initialLabelIndex: isQuantity ? 0 : 1,
-                      labels: ['Qty', 'Amt'],
-                      fontSize: 12,
-                      minWidth: 55,
-                      onToggle: (index) {
-                        setState(() {
-                          isQuantity = !isQuantity;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: SizeConfig.safeBlockVertical * 1.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: SizeConfig.safeBlockHorizontal * 60,
-                      child: CustomTextField(
-                        onChanged: (value) {
-                          setState(() {
-                            if (isStopLossPercentage) {
-                              stopLossPercentage = double.parse(value);
-                            } else {
-                              stopLossPrice = double.parse(value);
+                child: Container(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: SizeConfig.safeBlockVertical * 1,
+                        ),
+                        CustomTextField(
+                          onChanged: (value) {
+                            setState(() {
+                              entryPrice = double.parse(value);
+                            });
+                          },
+                          hintText: 'Stock Entry Price',
+                          labelText: 'Entry Price',
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please enter entry price';
                             }
-                          });
-                        },
-                        hintText: isStopLossPercentage
-                            ? 'Enter StopLoss Percentage'
-                            : 'Enter StopLoss Price',
-                        labelText:
-                            isStopLossPercentage ? 'StopLoss %' : 'StopLoss',
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter StopLoss';
-                          }
-                          return null;
-                        },
-                      ),
+                            return null;
+                          },
+                        ),
+                        SizedBox(
+                          height: SizeConfig.safeBlockVertical * 2,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: SizeConfig.safeBlockHorizontal * 60,
+                              child: CustomTextField(
+                                onChanged: (value) {
+                                  setState(
+                                    () {
+                                      var parsedValue = double.parse(value);
+                                      if (isQuantity) {
+                                        quantity = parsedValue.ceilToDouble();
+                                      } else {
+                                        investedAmount =
+                                            parsedValue.ceilToDouble();
+                                      }
+                                    },
+                                  );
+                                },
+                                hintText: isQuantity
+                                    ? 'Enter Stock Quantity'
+                                    : 'Enter Your Investment Amount',
+                                labelText: isQuantity ? 'Quantity' : 'Amount',
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Please enter ' +
+                                        (isQuantity ? 'Quantity' : 'Amount');
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                              width: SizeConfig.safeBlockHorizontal * 4,
+                            ),
+                            ToggleSwitch(
+                              initialLabelIndex: isQuantity ? 0 : 1,
+                              labels: ['Qty', 'Amt'],
+                              fontSize: 10,
+                              minWidth: 48,
+                              onToggle: (index) {
+                                setState(() {
+                                  isQuantity = !isQuantity;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: SizeConfig.safeBlockVertical * 2,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: SizeConfig.safeBlockHorizontal * 60,
+                              child: CustomTextField(
+                                onChanged: (value) {
+                                  setState(() {
+                                    if (isStopLossPercentage) {
+                                      stopLossPercentage = double.parse(value);
+                                    } else {
+                                      stopLossPrice = double.parse(value);
+                                    }
+                                  });
+                                },
+                                hintText: isStopLossPercentage
+                                    ? 'Enter StopLoss Percentage'
+                                    : 'Enter StopLoss Price',
+                                labelText: isStopLossPercentage
+                                    ? 'StopLoss %'
+                                    : 'StopLoss',
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Please enter StopLoss';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                              width: SizeConfig.safeBlockHorizontal * 4,
+                            ),
+                            ToggleSwitch(
+                              initialLabelIndex: isStopLossPercentage ? 0 : 1,
+                              labels: ['%', '\$'],
+                              fontSize: 10,
+                              minWidth: 48,
+                              onToggle: (index) {
+                                setState(() {
+                                  isStopLossPercentage = !isStopLossPercentage;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: SizeConfig.safeBlockVertical * 2,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: SizeConfig.safeBlockHorizontal * 60,
+                              child: CustomTextField(
+                                onChanged: (value) {
+                                  setState(() {
+                                    var parsedValue = double.parse(value);
+                                    if (isTargetPercentage) {
+                                      targetPercentage = parsedValue;
+                                    } else {
+                                      targetPrice = parsedValue;
+                                    }
+                                  });
+                                },
+                                hintText: isTargetPercentage
+                                    ? 'Enter Target Percentage'
+                                    : 'Enter Target Price',
+                                labelText:
+                                    isTargetPercentage ? 'Target %' : 'Target',
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    return 'Please enter target amount';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                              width: SizeConfig.safeBlockHorizontal * 4,
+                            ),
+                            ToggleSwitch(
+                              initialLabelIndex: isTargetPercentage ? 0 : 1,
+                              labels: ['%', '\$'],
+                              fontSize: 10,
+                              minWidth: 48,
+                              onToggle: (index) {
+                                setState(() {
+                                  isTargetPercentage = !isTargetPercentage;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: SizeConfig.safeBlockVertical * 2,
+                        ),
+                        CustomOutlinedButton(
+                          buttonLabel: 'Calculate',
+                          onPressed: calculate,
+                        ),
+                        SizedBox(
+                          height: SizeConfig.safeBlockVertical * 1.5,
+                        ),
+                        CustomOutlinedButton(
+                          buttonLabel: 'Reset',
+                          onPressed: reset,
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      width: SizeConfig.safeBlockHorizontal * 4,
-                    ),
-                    ToggleSwitch(
-                      initialLabelIndex: isStopLossPercentage ? 0 : 1,
-                      labels: ['%', '\$'],
-                      fontSize: 14,
-                      minWidth: 55,
-                      onToggle: (index) {
-                        setState(() {
-                          isStopLossPercentage = !isStopLossPercentage;
-                        });
-                      },
-                    ),
-                  ],
+                  ),
                 ),
-                SizedBox(
-                  height: SizeConfig.safeBlockVertical * 1.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: SizeConfig.safeBlockHorizontal * 60,
-                      child: CustomTextField(
-                        onChanged: (value) {
-                          setState(() {
-                            var parsedValue = double.parse(value);
-                            if (isTargetPercentage) {
-                              targetPercentage = parsedValue;
-                            } else {
-                              targetPrice = parsedValue;
-                            }
-                          });
-                        },
-                        hintText: isTargetPercentage
-                            ? 'Enter Target Percentage'
-                            : 'Enter Target Price',
-                        labelText: isTargetPercentage ? 'Target %' : 'Target',
-                        validator: (value) {
-                          if (value.isEmpty) {
-                            return 'Please enter target amount';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      width: SizeConfig.safeBlockHorizontal * 4,
-                    ),
-                    ToggleSwitch(
-                      initialLabelIndex: isTargetPercentage ? 0 : 1,
-                      labels: ['%', '\$'],
-                      fontSize: 14,
-                      minWidth: 55,
-                      onToggle: (index) {
-                        setState(() {
-                          isTargetPercentage = !isTargetPercentage;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: SizeConfig.safeBlockVertical * 2,
-                ),
-                CustomOutlinedButton(
-                  buttonLabel: 'Calculate',
-                  onPressed: calculate,
-                ),
-                SizedBox(
-                  height: SizeConfig.safeBlockVertical * 1.5,
-                ),
-                CustomOutlinedButton(
-                  buttonLabel: 'Reset',
-                  onPressed: reset,
-                ),
-                SizedBox(
-                  height: SizeConfig.safeBlockVertical * 1.5,
-                ),
-                Divider(
-                  color: Colors.black54,
-                  thickness: 0.5,
-                ),
-                ResultBox(
-                  entryPrice: entryPrice,
-                  investedAmount: investedAmount,
-                  quantity: quantity,
-                  stopLossPercentage: stopLossPercentage,
-                  targetPercentage: targetPercentage,
-                  targetPrice: targetPrice,
-                  totalLoss: totalLoss,
-                  totalProfit: totalProfit,
-                ),
-              ],
+              ),
             ),
-          ),
+            shouldShowResult
+                ? Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: ResultBox(
+                      entryPrice: entryPrice,
+                      investedAmount: investedAmount,
+                      quantity: quantity,
+                      stopLossPercentage: stopLossPercentage,
+                      targetPercentage: targetPercentage,
+                      targetPrice: targetPrice,
+                      totalLoss: totalLoss,
+                      totalProfit: totalProfit,
+                    ),
+                  )
+                : Container(),
+          ],
         ),
       ),
     );
