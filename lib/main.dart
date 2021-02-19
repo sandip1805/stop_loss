@@ -182,172 +182,133 @@ class _MyHomePageState extends State<MyHomePage> {
                         SizedBox(
                           height: SizeConfig.safeBlockVertical * 2,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: CustomTextField(
-                                onChanged: (value) {
-                                  setState(
-                                    () {
-                                      var parsedValue = double.parse(value);
-                                      if (isQuantity) {
-                                        quantity = parsedValue.ceilToDouble();
-                                      } else {
-                                        investedAmount =
-                                            parsedValue.ceilToDouble();
-                                      }
-                                    },
-                                  );
-                                },
-                                hintText: isQuantity
-                                    ? 'Enter Stock Quantity'
-                                    : 'Enter Your Investment Amount',
-                                labelText: isQuantity ? 'Quantity' : 'Amount',
-                                validator: (value) {
-                                  if (value.isEmpty) {
-                                    return 'Please enter ' +
-                                        (isQuantity ? 'Quantity' : 'Amount');
+                        CustomTextField(
+                          onChanged: (value) {
+                            setState(
+                              () {
+                                var parsedValue = double.parse(value);
+                                if (isQuantity) {
+                                  quantity = parsedValue.ceilToDouble();
+                                } else {
+                                  investedAmount =
+                                      parsedValue.ceilToDouble();
+                                }
+                              },
+                            );
+                          },
+                          hintText: isQuantity
+                              ? 'Enter Stock Quantity'
+                              : 'Enter Your Investment Amount',
+                          labelText: isQuantity ? 'Quantity' : 'Amount',
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please enter ' +
+                                  (isQuantity ? 'Quantity' : 'Amount');
+                            }
+                            return null;
+                          },
+                          suffix: CustomToggleButton(
+                            data: qtyAmtData,
+                            onPressed: (index) {
+                              setState(() {
+                                qtyAmtData.asMap().forEach((i, x) {
+                                  if (i == index) {
+                                    x['isSelected'] = true;
+                                  } else {
+                                    x['isSelected'] = false;
                                   }
-                                  return null;
-                                },
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Expanded(
-                              child: CustomToggleButton(
-                                data: qtyAmtData,
-                                onPressed: (index) {
-                                  setState(() {
-                                    qtyAmtData.asMap().forEach((i, x) {
-                                      if (i == index) {
-                                        x['isSelected'] = true;
-                                      } else {
-                                        x['isSelected'] = false;
-                                      }
-                                    });
-                                    isQuantity = index == 0 ? true : false;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
+                                });
+                                isQuantity = index == 0 ? true : false;
+                              });
+                            },
+                          ),
                         ),
                         SizedBox(
                           height: SizeConfig.safeBlockVertical * 2,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: CustomTextField(
-                                onChanged: (value) {
-                                  setState(() {
-                                    if (isStopLossPercentage) {
-                                      stopLossPercentage = double.parse(value);
-                                    } else {
-                                      stopLossPrice = double.parse(value);
-                                    }
-                                  });
-                                },
-                                hintText: isStopLossPercentage
-                                    ? 'Enter StopLoss Percentage'
-                                    : 'Enter StopLoss Price',
-                                labelText: isStopLossPercentage
-                                    ? 'StopLoss %'
-                                    : 'StopLoss',
-                                validator: (value) {
-                                  if (value.isEmpty) {
-                                    return 'Please enter StopLoss';
+                        CustomTextField(
+                          onChanged: (value) {
+                            setState(() {
+                              if (isStopLossPercentage) {
+                                stopLossPercentage = double.parse(value);
+                              } else {
+                                stopLossPrice = double.parse(value);
+                              }
+                            });
+                          },
+                          hintText: isStopLossPercentage
+                              ? 'Enter StopLoss Percentage'
+                              : 'Enter StopLoss Price',
+                          labelText:
+                              isStopLossPercentage ? 'StopLoss %' : 'StopLoss',
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please enter StopLoss';
+                            }
+                            return null;
+                          },
+                          suffix: CustomToggleButton(
+                            data: stopLossPercentageAmountData,
+                            onPressed: (index) {
+                              setState(() {
+                                stopLossPercentageAmountData
+                                    .asMap()
+                                    .forEach((i, x) {
+                                  if (i == index) {
+                                    x['isSelected'] = true;
+                                  } else {
+                                    x['isSelected'] = false;
                                   }
-                                  return null;
-                                },
-                              ),
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Expanded(
-                              child: CustomToggleButton(
-                                data: stopLossPercentageAmountData,
-                                onPressed: (index) {
-                                  setState(() {
-                                    stopLossPercentageAmountData
-                                        .asMap()
-                                        .forEach((i, x) {
-                                      if (i == index) {
-                                        x['isSelected'] = true;
-                                      } else {
-                                        x['isSelected'] = false;
-                                      }
-                                    });
-                                    isStopLossPercentage =
-                                        index == 0 ? true : false;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
+                                });
+                                isStopLossPercentage =
+                                    index == 0 ? true : false;
+                              });
+                            },
+                          ),
                         ),
                         SizedBox(
                           height: SizeConfig.safeBlockVertical * 2,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: CustomTextField(
-                                onChanged: (value) {
-                                  setState(() {
-                                    var parsedValue = double.parse(value);
-                                    if (isTargetPercentage) {
-                                      targetPercentage = parsedValue;
-                                    } else {
-                                      targetPrice = parsedValue;
-                                    }
-                                  });
-                                },
-                                hintText: isTargetPercentage
-                                    ? 'Enter Target Percentage'
-                                    : 'Enter Target Price',
-                                labelText:
-                                    isTargetPercentage ? 'Target %' : 'Target',
-                                validator: (value) {
-                                  if (value.isEmpty) {
-                                    return 'Please enter target amount';
+                        CustomTextField(
+                          onChanged: (value) {
+                            setState(() {
+                              var parsedValue = double.parse(value);
+                              if (isTargetPercentage) {
+                                targetPercentage = parsedValue;
+                              } else {
+                                targetPrice = parsedValue;
+                              }
+                            });
+                          },
+                          hintText: isTargetPercentage
+                              ? 'Enter Target Percentage'
+                              : 'Enter Target Price',
+                          labelText:
+                              isTargetPercentage ? 'Target %' : 'Target',
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please enter target amount';
+                            }
+                            return null;
+                          },
+                          suffix: CustomToggleButton(
+                            data: targetPercentageAmountData,
+                            onPressed: (index) {
+                              setState(() {
+                                targetPercentageAmountData
+                                    .asMap()
+                                    .forEach((i, x) {
+                                  if (i == index) {
+                                    x['isSelected'] = true;
+                                  } else {
+                                    x['isSelected'] = false;
                                   }
-                                  return null;
-                                },
-                              ),
-                            ),
-                            SizedBox(
-                              width: SizeConfig.safeBlockHorizontal * 4,
-                            ),
-                            Expanded(
-                              child: CustomToggleButton(
-                                data: targetPercentageAmountData,
-                                onPressed: (index) {
-                                  setState(() {
-                                    targetPercentageAmountData
-                                        .asMap()
-                                        .forEach((i, x) {
-                                      if (i == index) {
-                                        x['isSelected'] = true;
-                                      } else {
-                                        x['isSelected'] = false;
-                                      }
-                                    });
-                                    isStopLossPercentage =
-                                        index == 0 ? true : false;
-                                  });
-                                },
-                              ),
-                            ),
-                          ],
+                                });
+                                isStopLossPercentage =
+                                index == 0 ? true : false;
+                              });
+                            },
+                          ),
                         ),
                         SizedBox(
                           height: SizeConfig.safeBlockVertical * 2,

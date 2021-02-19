@@ -5,9 +5,10 @@ class CustomTextField extends StatelessWidget {
   final Function validator;
   final String hintText;
   final String labelText;
+  final Widget suffix;
 
   const CustomTextField(
-      {Key key, this.onChanged, this.hintText, this.validator, this.labelText})
+      {Key key, this.onChanged, this.hintText, this.validator, this.labelText, this.suffix})
       : super(key: key);
 
   @override
@@ -17,7 +18,8 @@ class CustomTextField extends StatelessWidget {
       validator: validator,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
-        isDense: true,
+        contentPadding: const EdgeInsets.all(8.0),
+        suffixIcon: suffix,
         hintText: hintText,
         labelText: labelText,
         hintStyle: TextStyle(
@@ -27,13 +29,13 @@ class CustomTextField extends StatelessWidget {
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
           borderSide: BorderSide(
-            color: Colors.black45,
+            color: Colors.black12,
           ),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
           borderSide: BorderSide(
-            color: Colors.black45,
+            color: Colors.black12,
           ),
         ),
         errorBorder: OutlineInputBorder(

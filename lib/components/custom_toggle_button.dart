@@ -10,7 +10,7 @@ class CustomToggleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ToggleButtons(
-      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+      borderRadius: BorderRadius.circular(10),
       onPressed: onPressed,
       isSelected: data.map((x) => x['isSelected'] as bool).toList(),
       children: data
