@@ -35,88 +35,105 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  bool shouldShowResult = false;
-  bool isQuantity = true;
-  bool isStopLossPercentage = true;
-  bool isTargetPercentage = true;
-  double entryPrice = 0;
-  double investedAmount = 0;
-  double stopLossPrice = 0;
-  double stopLossPercentage = 0;
-  double targetPrice = 0;
-  double targetPercentage = 0;
-  double quantity = 0;
-  double totalProfit = 0, totalLoss = 0;
+  bool _shouldShowResult = false;
+  bool _isQuantity = true;
+  bool _isStopLossPercentage = true;
+  bool _isTargetPercentage = true;
+  double _entryPrice = 0;
+  double _investedAmount = 0;
+  double _stopLossPrice = 0;
+  double _stopLossPercentage = 0;
+  double _targetPrice = 0;
+  double _targetPercentage = 0;
+  double _quantity = 0;
+  double _totalProfit = 0, _totalLoss = 0;
   final _formKey = GlobalKey<FormState>();
-  var qtyAmtData = [
+  var _qtyAmtData = [
     {'widget': Text('Qty'), 'isSelected': true},
     {'widget': Text('Amt'), 'isSelected': false}
   ];
-
-  var stopLossPercentageAmountData = [
+  var _stopLossPercentageAmountData = [
+    {'widget': Text('%'), 'isSelected': true},
+    {'widget': Text('\$'), 'isSelected': false}
+  ];
+  var _targetPercentageAmountData = [
     {'widget': Text('%'), 'isSelected': true},
     {'widget': Text('\$'), 'isSelected': false}
   ];
 
-  var targetPercentageAmountData = [
-    {'widget': Text('%'), 'isSelected': true},
-    {'widget': Text('\$'), 'isSelected': false}
-  ];
+  initializeToggleButtonData() {
+    _qtyAmtData = [
+      {'widget': Text('Qty'), 'isSelected': true},
+      {'widget': Text('Amt'), 'isSelected': false}
+    ];
+
+    _stopLossPercentageAmountData = [
+      {'widget': Text('%'), 'isSelected': true},
+      {'widget': Text('\$'), 'isSelected': false}
+    ];
+
+    _targetPercentageAmountData = [
+      {'widget': Text('%'), 'isSelected': true},
+      {'widget': Text('\$'), 'isSelected': false}
+    ];
+  }
 
   reset() {
     setState(() {
-      shouldShowResult = false;
       _formKey.currentState.reset();
-      isQuantity = true;
-      isStopLossPercentage = true;
-      isTargetPercentage = true;
-      entryPrice = 0;
-      investedAmount = 0;
-      stopLossPrice = 0;
-      stopLossPercentage = 0;
-      targetPrice = 0;
-      targetPercentage = 0;
-      quantity = 0;
-      totalProfit = 0;
-      totalLoss = 0;
+      initializeToggleButtonData();
+      _shouldShowResult = false;
+      _isQuantity = true;
+      _isStopLossPercentage = true;
+      _isTargetPercentage = true;
+      _entryPrice = 0;
+      _investedAmount = 0;
+      _stopLossPrice = 0;
+      _stopLossPercentage = 0;
+      _targetPrice = 0;
+      _targetPercentage = 0;
+      _quantity = 0;
+      _totalProfit = 0;
+      _totalLoss = 0;
     });
   }
 
   void calculate() {
     if (_formKey.currentState.validate()) {
       setState(() {
-        shouldShowResult = true;
-        targetPrice = isTargetPercentage
-            ? (entryPrice + ((targetPercentage / 100) * entryPrice))
-            : targetPrice;
-        print('targetPrice $targetPrice');
+        _shouldShowResult = true;
+        _targetPrice = _isTargetPercentage
+            ? (_entryPrice + ((_targetPercentage / 100) * _entryPrice))
+            : _targetPrice;
+        print('targetPrice $_targetPrice');
 
-        targetPercentage = isTargetPercentage
-            ? targetPercentage
-            : calculatePercentage(targetPrice, entryPrice);
-        print('targetPercentage $targetPercentage');
+        _targetPercentage = _isTargetPercentage
+            ? _targetPercentage
+            : calculatePercentage(_targetPrice, _entryPrice);
+        print('targetPercentage $_targetPercentage');
 
-        stopLossPrice = isStopLossPercentage
-            ? (entryPrice - ((stopLossPercentage / 100) * entryPrice))
-            : stopLossPrice;
-        print('stopLossPrice $stopLossPrice');
+        _stopLossPrice = _isStopLossPercentage
+            ? (_entryPrice - ((_stopLossPercentage / 100) * _entryPrice))
+            : _stopLossPrice;
+        print('stopLossPrice $_stopLossPrice');
 
-        investedAmount = isQuantity ? (quantity * entryPrice) : investedAmount;
-        print('investedAmount $investedAmount');
+        _investedAmount =
+            _isQuantity ? (_quantity * _entryPrice) : _investedAmount;
+        print('investedAmount $_investedAmount');
 
-        quantity = isQuantity ? quantity : (investedAmount / entryPrice);
-        print('quantity $quantity');
+        _quantity = _isQuantity ? _quantity : (_investedAmount / _entryPrice);
+        print('quantity $_quantity');
 
-        totalProfit = (targetPrice - entryPrice) * quantity;
-        print('totalProfit $totalProfit');
+        _totalProfit = (_targetPrice - _entryPrice) * _quantity;
+        print('totalProfit $_totalProfit');
 
-        totalLoss = (entryPrice - stopLossPrice) * quantity;
-        print('totalLoss $totalLoss');
+        _totalLoss = (_entryPrice - _stopLossPrice) * _quantity;
+        print('totalLoss $_totalLoss');
 
-        stopLossPercentage = isStopLossPercentage
-            ? stopLossPercentage
-            : calculatePercentage(entryPrice, stopLossPrice);
-        print('stopLossPercentage $stopLossPercentage');
+        _stopLossPercentage = _isStopLossPercentage
+            ? _stopLossPercentage
+            : calculatePercentage(_entryPrice, _stopLossPrice);
+        print('stopLossPercentage $_stopLossPercentage');
       });
     }
   }
@@ -167,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         CustomTextField(
                           onChanged: (value) {
                             setState(() {
-                              entryPrice = double.parse(value);
+                              _entryPrice = double.parse(value);
                             });
                           },
                           hintText: 'Stock Entry Price',
@@ -187,38 +204,37 @@ class _MyHomePageState extends State<MyHomePage> {
                             setState(
                               () {
                                 var parsedValue = double.parse(value);
-                                if (isQuantity) {
-                                  quantity = parsedValue.ceilToDouble();
+                                if (_isQuantity) {
+                                  _quantity = parsedValue.ceilToDouble();
                                 } else {
-                                  investedAmount =
-                                      parsedValue.ceilToDouble();
+                                  _investedAmount = parsedValue.ceilToDouble();
                                 }
                               },
                             );
                           },
-                          hintText: isQuantity
+                          hintText: _isQuantity
                               ? 'Enter Stock Quantity'
                               : 'Enter Your Investment Amount',
-                          labelText: isQuantity ? 'Quantity' : 'Amount',
+                          labelText: _isQuantity ? 'Quantity' : 'Amount',
                           validator: (value) {
                             if (value.isEmpty) {
                               return 'Please enter ' +
-                                  (isQuantity ? 'Quantity' : 'Amount');
+                                  (_isQuantity ? 'Quantity' : 'Amount');
                             }
                             return null;
                           },
                           suffix: CustomToggleButton(
-                            data: qtyAmtData,
+                            data: _qtyAmtData,
                             onPressed: (index) {
                               setState(() {
-                                qtyAmtData.asMap().forEach((i, x) {
+                                _qtyAmtData.asMap().forEach((i, x) {
                                   if (i == index) {
                                     x['isSelected'] = true;
                                   } else {
                                     x['isSelected'] = false;
                                   }
                                 });
-                                isQuantity = index == 0 ? true : false;
+                                _isQuantity = index == 0 ? true : false;
                               });
                             },
                           ),
@@ -229,18 +245,18 @@ class _MyHomePageState extends State<MyHomePage> {
                         CustomTextField(
                           onChanged: (value) {
                             setState(() {
-                              if (isStopLossPercentage) {
-                                stopLossPercentage = double.parse(value);
+                              if (_isStopLossPercentage) {
+                                _stopLossPercentage = double.parse(value);
                               } else {
-                                stopLossPrice = double.parse(value);
+                                _stopLossPrice = double.parse(value);
                               }
                             });
                           },
-                          hintText: isStopLossPercentage
+                          hintText: _isStopLossPercentage
                               ? 'Enter StopLoss Percentage'
                               : 'Enter StopLoss Price',
                           labelText:
-                              isStopLossPercentage ? 'StopLoss %' : 'StopLoss',
+                              _isStopLossPercentage ? 'StopLoss %' : 'StopLoss',
                           validator: (value) {
                             if (value.isEmpty) {
                               return 'Please enter StopLoss';
@@ -248,10 +264,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             return null;
                           },
                           suffix: CustomToggleButton(
-                            data: stopLossPercentageAmountData,
+                            data: _stopLossPercentageAmountData,
                             onPressed: (index) {
                               setState(() {
-                                stopLossPercentageAmountData
+                                _stopLossPercentageAmountData
                                     .asMap()
                                     .forEach((i, x) {
                                   if (i == index) {
@@ -260,7 +276,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     x['isSelected'] = false;
                                   }
                                 });
-                                isStopLossPercentage =
+                                _isStopLossPercentage =
                                     index == 0 ? true : false;
                               });
                             },
@@ -273,18 +289,18 @@ class _MyHomePageState extends State<MyHomePage> {
                           onChanged: (value) {
                             setState(() {
                               var parsedValue = double.parse(value);
-                              if (isTargetPercentage) {
-                                targetPercentage = parsedValue;
+                              if (_isTargetPercentage) {
+                                _targetPercentage = parsedValue;
                               } else {
-                                targetPrice = parsedValue;
+                                _targetPrice = parsedValue;
                               }
                             });
                           },
-                          hintText: isTargetPercentage
+                          hintText: _isTargetPercentage
                               ? 'Enter Target Percentage'
                               : 'Enter Target Price',
                           labelText:
-                              isTargetPercentage ? 'Target %' : 'Target',
+                              _isTargetPercentage ? 'Target %' : 'Target',
                           validator: (value) {
                             if (value.isEmpty) {
                               return 'Please enter target amount';
@@ -292,10 +308,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             return null;
                           },
                           suffix: CustomToggleButton(
-                            data: targetPercentageAmountData,
+                            data: _targetPercentageAmountData,
                             onPressed: (index) {
                               setState(() {
-                                targetPercentageAmountData
+                                _targetPercentageAmountData
                                     .asMap()
                                     .forEach((i, x) {
                                   if (i == index) {
@@ -304,8 +320,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     x['isSelected'] = false;
                                   }
                                 });
-                                isStopLossPercentage =
-                                index == 0 ? true : false;
+                                _isTargetPercentage = index == 0 ? true : false;
                               });
                             },
                           ),
@@ -324,24 +339,27 @@ class _MyHomePageState extends State<MyHomePage> {
                           buttonLabel: 'Reset',
                           onPressed: reset,
                         ),
+                        SizedBox(
+                          height: SizeConfig.safeBlockVertical * 1,
+                        ),
                       ],
                     ),
                   ),
                 ),
               ),
             ),
-            shouldShowResult
+            _shouldShowResult
                 ? Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: ResultBox(
-                      entryPrice: entryPrice,
-                      investedAmount: investedAmount,
-                      quantity: quantity,
-                      stopLossPercentage: stopLossPercentage,
-                      targetPercentage: targetPercentage,
-                      targetPrice: targetPrice,
-                      totalLoss: totalLoss,
-                      totalProfit: totalProfit,
+                      entryPrice: _entryPrice,
+                      investedAmount: _investedAmount,
+                      quantity: _quantity,
+                      stopLossPercentage: _stopLossPercentage,
+                      targetPercentage: _targetPercentage,
+                      targetPrice: _targetPrice,
+                      totalLoss: _totalLoss,
+                      totalProfit: _totalProfit,
                     ),
                   )
                 : Container(),
